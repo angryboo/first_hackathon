@@ -6,6 +6,7 @@ let overText = true; // 문자 초과
 let matchText = true; // 문자 중복
 let emptyValue = false;
 let emptyCaption = false;
+let choiceData = [];
 
 
 // DOM
@@ -13,25 +14,31 @@ let emptyCaption = false;
 // 공통영역
 const $matrix = document.querySelector('.matrix');
 const $solveExam = document.querySelector('.solve-exam');
-const $crateExam = document.querySelector('.crate-exam');
+const $crateExam = document.querySelector('.create-exam');
 
 // 문제 출제 좌표 관련
 const $pointCompass = document.querySelector('.point-of-the-compass');
 const $dirX = document.getElementById('dirX');
 
 // 문제 출제 text
-const $crateValue = document.querySelector('.crate-value');
-const $crateCaption = document.querySelector('.crate-caption-value');
+const $crateValue = document.querySelector('.create-value');
+const $crateCaption = document.querySelector('.create-caption-value');
 const $warningMaxInputText = document.querySelector('.warning-max-input-text');
 const $warningMacthInputText = document.querySelector('.warning-macth-input-text');
 const $warningEmtpyInputText = document.querySelector('.warning-empty-input-text');
 const $warningEmtpyCaptionText = document.querySelector('.warning-empty-caption-text');
 
 // 문제 출제 btn
-const $btnCrateSubmit = document.querySelector('.btn-crate-submit');
-const $btnCrateInit = document.querySelector('.btn-crate-init');
+const $btnCrateSubmit = document.querySelector('.btn-create-submit');
+const $btnCrateInit = document.querySelector('.btn-create-init');
 const $btnSolveExam = document.querySelector('.btn-solve-exam');
-const $btnCrateExam = document.querySelector('.btn-crate-exam');
+const $btnCrateExam = document.querySelector('.btn-create-exam');
+
+// 문제풀이
+const $solveExplan = document.querySelector('.solve-explan');
+const $btnSolveSubmit = document.querySelector('.btn-solve-submit');
+const $solveValue = document.querySelector('.solve-value');
+const $warningMacthSolveText = document.querySelector('.warning-macth-solve-text');
 
 
 // 랜더 함수
@@ -62,19 +69,9 @@ const saveData = () => {
     position: `${pointCompass[0]}${pointCompass[1]}`,
     direction: $dirX.checked,
     value: $crateValue.value,
-    caption: $crateCaption.value
+    caption: $crateCaption.value,
+    completed: false
   }];
-};
-
-
-// 좌표 취득 함수
-const getPointOfCompass = target => {
-  document.querySelectorAll('.contentBox').forEach(content => {
-    content.classList.remove('focusOn');
-  });
-  pointCompass = [`${target.className.match(/[0-9]+/)}`, `${target.parentElement.className.match(/[0-9]+/)}`];
-  $pointCompass.innerHTML = `X축 좌표 : ${pointCompass[0]}<br>Y축 좌표 : ${pointCompass[1]}`;
-  target.classList.add('focusOn');
 };
 
 
@@ -100,6 +97,7 @@ const setDataToMatrix = () => {
     }
   });
   crateMatrix = tempMatrix;
+
   render();
 };
 
@@ -126,6 +124,7 @@ const interlockMatchText = () => {
       }
     });
   });
+
   matchText = matchCount === 0 || false;
   $warningMacthInputText.textContent = matchText ? '' : `동일하지 않은 문자가 ${matchCount}개 존재합니다.`;
 };
@@ -134,37 +133,119 @@ const interlockMatchText = () => {
 // 문자 입력 초과 인터락
 const interlockMaxText = () => {
   overText = true;
+
   if ($dirX.checked && $crateValue.value.length > crateMatrix[0].length - +pointCompass[0]) {
     overText = false;
     $warningMaxInputText.textContent = `글자 수를 초과하였습니다 ${crateMatrix[0].length - +pointCompass[0]}자 이내로 입력해 주세요.`;
   }
+
   if (!$dirX.checked && $crateValue.value.length > crateMatrix.length - +pointCompass[1]) {
     overText = false;
     $warningMaxInputText.textContent = `글자 수를 초과하였습니다 ${crateMatrix.length - +pointCompass[1]}자 이내로 입력해 주세요.`;
   }
+
   if (overText) $warningMaxInputText.textContent = '';
 };
 
 
 // 문제 출제 빈 문자 인터락
-const interlocEmptyValue = () => {
+const interlockEmptyValue = () => {
   emptyValue = $crateValue.value || false;
   $warningEmtpyInputText.textContent = emptyValue ? '' : '값을 입력하세요';
 };
 
 
 // 문제 출제 빈 문자 인터락
-const interlocEmptyCaption = () => {
+const interlockEmptyCaption = () => {
   emptyCaption = $crateCaption.value || false;
   $warningEmtpyCaptionText.textContent = emptyValue ? '' : '값을 입력하세요';
 };
 
 
-// 문제 풀기 랜더링
+// 문제 풀기 랜더링 함수
 const renderingExam = () => {
+  const tempPosition = objData.map(({ position }) => position);
   document.querySelectorAll('.contentBox').forEach(content => {
-    if (content.textContent === '') content.classList.add('black-matrix');
+    if (content.textContent === '') {
+      content.classList.add('black-matrix');
+    } else {
+      content.classList.add('hide-text');
+    }
+    const tempText = `${content.className.match(/[0-9]+/)}${content.parentElement.className.match(/[0-9]+/)}`;
+    tempPosition.forEach(value => {
+      if (value === tempText) content.classList.add('in-exam');
+    });
   });
+};
+
+
+// 정답 맞추기 랜더링 함수
+const renderingMatchingSolution = () => {
+  const tempObj = objData.filter(obj => obj.completed === true);
+  let tempArr = [];
+  tempObj.forEach(obj => {
+    for (let i = 0; i < obj.value.length; i++) {
+      if (obj.direction) {
+        tempArr = [...tempArr, +obj.position + i * 10];
+      } else {
+        tempArr = [...tempArr, +obj.position + i];
+      }
+    }
+  });
+
+
+  document.querySelectorAll('.contentBox').forEach(content => {
+    const tempText = `${content.className.match(/[0-9]+/)}${content.parentElement.className.match(/[0-9]+/)}`;
+    tempArr.forEach(value => {
+      if (value === +tempText) {
+        content.classList.remove('in-exam');
+        content.classList.remove('hide-text');
+        content.classList.add('completed');
+      }
+    });
+  });
+};
+
+
+// 문제 풀기 설명 함수
+const setSolveExplan = () => {
+  $solveExplan.textContent = '';
+  if (choiceData.length) {
+    choiceData.forEach(obj => {
+      $solveExplan.textContent += `${obj.direction ? '가로열쇠 : ' : '세로열쇠 : '}${obj.caption}`;
+    });
+  }
+};
+
+
+// data 선택 함수
+const getChoiceData = () => {
+  choiceData = objData.filter(obj => !obj.completed && obj.position === `${pointCompass[0]}${pointCompass[1]}`);
+};
+
+
+// 정답 확인 함수
+const matchingSolution = () => {
+  choiceData.forEach(obj => {
+    obj.completed = obj.value === $solveValue.value || false;
+  });
+  renderingMatchingSolution();
+  getChoiceData();
+  setSolveExplan();
+};
+
+
+// 좌표 취득 함수
+const getPointOfCompass = target => {
+  document.querySelectorAll('.contentBox').forEach(content => {
+    content.classList.remove('focusOn');
+  });
+  pointCompass = [`${target.className.match(/[0-9]+/)}`, `${target.parentElement.className.match(/[0-9]+/)}`];
+  $pointCompass.innerHTML = `X축 좌표 : ${pointCompass[0]}<br>Y축 좌표 : ${pointCompass[1]}`;
+  target.classList.add('focusOn');
+
+  getChoiceData();
+  setSolveExplan();
 };
 
 
@@ -175,10 +256,12 @@ $btnSolveExam.onclick = () => {
   renderingExam();
 };
 
+
 // 출제하기 버튼 이벤트
 $btnCrateExam.onclick = () => {
   $solveExam.classList.add('hidden');
   $crateExam.classList.remove('hidden');
+  render();
 };
 
 
@@ -194,22 +277,30 @@ $btnCrateInit.onclick = () => {
   initialize();
 };
 
+
 // 문제 출제 text 입력 이벤트
 $crateValue.onblur = () => {
   interlockMaxText();
   if (!overText) return;
   interlockMatchText();
-  interlocEmptyValue();
-  interlocEmptyCaption();
+  interlockEmptyValue();
+  interlockEmptyCaption();
 };
+
 
 // 문제 출제 이벤트
 $btnCrateSubmit.onclick = () => {
-  interlocEmptyValue();
-  interlocEmptyCaption();
+  interlockEmptyValue();
+  interlockEmptyCaption();
   if (!overText || !matchText || !emptyValue || !emptyCaption) return;
   setDataToMatrix();
   saveData();
   $crateValue.value = '';
   $crateCaption.value = '';
+};
+
+
+// 정답 확인 이벤트
+$btnSolveSubmit.onclick = () => {
+  matchingSolution();
 };

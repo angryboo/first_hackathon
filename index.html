@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href=".//main.css">
+  <link rel="stylesheet" href="./main.css">
   <title>Document</title>
 </head>
 <body>
@@ -16,7 +16,7 @@
     <div class="matrix"></div>
 
     <!-- 문제 출제 -->
-    <div class="crate-exam">
+    <div class="create-exam">
       <h2 class="sub-heading">문제 출제하기</h2>
       <div class="exam-container">
 
@@ -36,25 +36,25 @@
         </div>
       
         <!-- 정답 입력 (출제) -->
-        <div class="crate-input">
+        <div class="create-input">
           <span>Matrix 안에<br>들어갈 값을 입력하세요</span>
-          <input type="text" class="crate-value">
+          <input type="text" class="create-value">
           <em class="warning-empty-input-text"></em>
           <em class="warning-max-input-text"></em>
           <em class="warning-macth-input-text"></em>
         </div>
       
         <!-- 문제 설명 입력 -->
-        <div class="crate-caption">
+        <div class="create-caption">
           <span>입력한 문제의<br>설명을 입력하세요</span>
-          <input type="text" class="crate-caption-value">
+          <input type="text" class="create-caption-value">
           <em class="warning-empty-caption-text"></em>
         </div>
     
         <!-- 출제 버튼 모음 -->
-        <div class="btn-crate">
-          <button type="submit" class="btn-crate-submit">출제</button>
-          <button class="btn-crate-init">초기화</button>
+        <div class="btn-create">
+          <button class="btn-create-submit">출제</button>
+          <button class="btn-create-init">초기화</button>
           <button class="btn-solve-exam">문제 풀기</button>
         </div>
       </div>
@@ -62,11 +62,22 @@
 
     <!-- 문제 풀이 -->
     <div class="solve-exam hidden">
-      <h2 class="sub-heading">문제 풀기기</h2>
+      <h2 class="sub-heading">문제 풀기</h2>
       <div class="exam-container">
-    
+
+        <!-- 문제 설명 -->
+        <div class="solve-explan"></div>
+
+        <!-- 정답 입력 (풀이) -->
+        <div class="solve-input">
+          <span>정답은?</span>
+          <input type="text" class="solve-value">
+          <em class="warning-macth-solve-text"></em>
+        </div>
+
         <div class="btn-solve">
-          <button class="btn-crate-exam">문제 출제</button>
+          <button class="btn-solve-submit">확인</button>
+          <button class="btn-create-exam">문제 출제</button>
         </div>
       </div>
     </div>

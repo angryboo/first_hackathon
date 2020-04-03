@@ -50,7 +50,7 @@ main {
   display: none;
 }
 
-.choice {
+.focusOn {
   background-color: burlywood;
 }
 
@@ -70,14 +70,11 @@ main {
   font-size: 14px;
 }
 
-.crate-value {
+.crate-input {
   display: block;
   width: 170px;
 }
 
-.crate-value > em {
-  color: red;
-}
 
 .crate-input > span, .crate-input > em, .crate-input > input {
   display: block;
@@ -115,4 +112,8 @@ main {
   background-color: #434099;
   color: white;
   margin-bottom: 10px;  
+}
+
+.black-matrix {
+  background-color: #b8b6e9;
 }

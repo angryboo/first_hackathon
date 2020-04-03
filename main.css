@@ -136,3 +136,7 @@ main {
 .solve-explan {
   width: 300px;
 }
+
+.solve-input > span, .solve-value, .warning-macth-solve-text {
+  display: block;
+}

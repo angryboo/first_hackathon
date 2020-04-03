@@ -14,23 +14,23 @@ let choiceData = [];
 // 공통영역
 const $matrix = document.querySelector('.matrix');
 const $solveExam = document.querySelector('.solve-exam');
-const $crateExam = document.querySelector('.create-exam');
+const $createExam = document.querySelector('.create-exam');
 
 // 문제 출제 좌표 관련
 const $pointCompass = document.querySelector('.point-of-the-compass');
 const $dirX = document.getElementById('dirX');
 
 // 문제 출제 text
-const $crateValue = document.querySelector('.create-value');
-const $crateCaption = document.querySelector('.create-caption-value');
+const $createValue = document.querySelector('.create-value');
+const $createCaption = document.querySelector('.create-caption-value');
 const $warningMaxInputText = document.querySelector('.warning-max-input-text');
 const $warningMacthInputText = document.querySelector('.warning-macth-input-text');
 const $warningEmtpyInputText = document.querySelector('.warning-empty-input-text');
 const $warningEmtpyCaptionText = document.querySelector('.warning-empty-caption-text');
 
 // 문제 출제 btn
-const $btnCrateSubmit = document.querySelector('.btn-create-submit');
-const $btnCrateInit = document.querySelector('.btn-create-init');
+const $btnCreateSubmit = document.querySelector('.btn-create-submit');
+const $btnCreateInit = document.querySelector('.btn-create-init');
 const $btnSolveExam = document.querySelector('.btn-solve-exam');
 const $btnCrateExam = document.querySelector('.btn-create-exam');
 
@@ -68,8 +68,8 @@ const saveData = () => {
   objData = [...objData, {
     position: `${pointCompass[0]}${pointCompass[1]}`,
     direction: $dirX.checked,
-    value: $crateValue.value,
-    caption: $crateCaption.value,
+    value: $createValue.value,
+    caption: $createCaption.value,
     completed: false
   }];
 };
@@ -86,7 +86,7 @@ const initialize = () => {
 
 // 문자 삽입 함수
 const setDataToMatrix = () => {
-  const getValue = [...$crateValue.value];
+  const getValue = [...$createValue.value];
   const tempMatrix = [...crateMatrix];
 
   getValue.forEach((value, i) => {
@@ -106,7 +106,7 @@ const setDataToMatrix = () => {
 const interlockMatchText = () => {
   matchText = true;
   const tempMatrix = Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => ''));
-  const getValue = [...$crateValue.value];
+  const getValue = [...$createValue.value];
   let matchCount = 0;
 
   getValue.forEach((value, i) => {
@@ -134,12 +134,12 @@ const interlockMatchText = () => {
 const interlockMaxText = () => {
   overText = true;
 
-  if ($dirX.checked && $crateValue.value.length > crateMatrix[0].length - +pointCompass[0]) {
+  if ($dirX.checked && $createValue.value.length > crateMatrix[0].length - +pointCompass[0]) {
     overText = false;
     $warningMaxInputText.textContent = `글자 수를 초과하였습니다 ${crateMatrix[0].length - +pointCompass[0]}자 이내로 입력해 주세요.`;
   }
 
-  if (!$dirX.checked && $crateValue.value.length > crateMatrix.length - +pointCompass[1]) {
+  if (!$dirX.checked && $createValue.value.length > crateMatrix.length - +pointCompass[1]) {
     overText = false;
     $warningMaxInputText.textContent = `글자 수를 초과하였습니다 ${crateMatrix.length - +pointCompass[1]}자 이내로 입력해 주세요.`;
   }
@@ -150,14 +150,14 @@ const interlockMaxText = () => {
 
 // 문제 출제 빈 문자 인터락
 const interlockEmptyValue = () => {
-  emptyValue = $crateValue.value || false;
+  emptyValue = $createValue.value || false;
   $warningEmtpyInputText.textContent = emptyValue ? '' : '값을 입력하세요';
 };
 
 
 // 문제 출제 빈 문자 인터락
 const interlockEmptyCaption = () => {
-  emptyCaption = $crateCaption.value || false;
+  emptyCaption = $createCaption.value || false;
   $warningEmtpyCaptionText.textContent = emptyValue ? '' : '값을 입력하세요';
 };
 
@@ -192,7 +192,6 @@ const renderingMatchingSolution = () => {
       }
     }
   });
-
 
   document.querySelectorAll('.contentBox').forEach(content => {
     const tempText = `${content.className.match(/[0-9]+/)}${content.parentElement.className.match(/[0-9]+/)}`;
@@ -229,6 +228,7 @@ const matchingSolution = () => {
   choiceData.forEach(obj => {
     obj.completed = obj.value === $solveValue.value || false;
   });
+  $warningMacthSolveText.textContent = choiceData.some(obj => obj.completed === true) ? '정답입니다' : '오답입니다';
   renderingMatchingSolution();
   getChoiceData();
   setSolveExplan();
@@ -252,7 +252,7 @@ const getPointOfCompass = target => {
 // 문제풀이 버튼 이벤트
 $btnSolveExam.onclick = () => {
   $solveExam.classList.remove('hidden');
-  $crateExam.classList.add('hidden');
+  $createExam.classList.add('hidden');
   renderingExam();
 };
 
@@ -260,7 +260,7 @@ $btnSolveExam.onclick = () => {
 // 출제하기 버튼 이벤트
 $btnCrateExam.onclick = () => {
   $solveExam.classList.add('hidden');
-  $crateExam.classList.remove('hidden');
+  $createExam.classList.remove('hidden');
   render();
 };
 
@@ -273,13 +273,13 @@ $matrix.onclick = ({ target }) => {
 
 
 // 초기화 이벤트
-$btnCrateInit.onclick = () => {
+$btnCreateInit.onclick = () => {
   initialize();
 };
 
 
 // 문제 출제 text 입력 이벤트
-$crateValue.onblur = () => {
+$createValue.onblur = () => {
   interlockMaxText();
   if (!overText) return;
   interlockMatchText();
@@ -289,18 +289,19 @@ $crateValue.onblur = () => {
 
 
 // 문제 출제 이벤트
-$btnCrateSubmit.onclick = () => {
+$btnCreateSubmit.onclick = () => {
   interlockEmptyValue();
   interlockEmptyCaption();
   if (!overText || !matchText || !emptyValue || !emptyCaption) return;
   setDataToMatrix();
   saveData();
-  $crateValue.value = '';
-  $crateCaption.value = '';
+  $createValue.value = '';
+  $createCaption.value = '';
 };
 
 
 // 정답 확인 이벤트
 $btnSolveSubmit.onclick = () => {
   matchingSolution();
+  $solveValue.value = '';
 };
